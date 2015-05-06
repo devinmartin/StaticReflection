@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>StaticReflection</id>
+    <version>$version$</version>
+    <title>$title$</title>
+    <authors>Devin Martin</authors>
+    <owners>Devin Martin</owners>
+    <projectUrl>https://bitbucket.org/devinmartin/nuget</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>This is intended to relieve some of reflection's shortcomings by adding compiler checking against member info in reflective operations.</description>
+	<summary>Simple helper methods for extracting member info using lambdas.</summary>
+    <copyright>2013 Devin Martin</copyright>
+    <tags>lambda reflection member name</tags>
+  </metadata>
+</package>
