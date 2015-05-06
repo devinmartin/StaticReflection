@@ -6,11 +6,11 @@
     <title>$title$</title>
     <authors>Devin Martin</authors>
     <owners>Devin Martin</owners>
-    <projectUrl>https://bitbucket.org/devinmartin/nuget</projectUrl>
+    <projectUrl>https://github.com/devinmartin/staticreflection</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>This is intended to relieve some of reflection's shortcomings by adding compiler checking against member info in reflective operations.</description>
-	<summary>Simple helper methods for extracting member info using lambdas.</summary>
-    <copyright>2013 Devin Martin</copyright>
-    <tags>lambda reflection member name</tags>
+    <description>Relieves some of reflection's shortcomings by adding some type safe access to MemberInfo and code generation.</description>
+	  <summary>Combines the power of reflection with the performance and type safety of static code.</summary>
+    <copyright>2013-2015 Devin Martin</copyright>
+    <tags>lambda reflection member name code generation</tags>
   </metadata>
 </package>

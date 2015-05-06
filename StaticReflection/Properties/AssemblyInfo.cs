@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("StaticReflection")]
-[assembly: AssemblyDescription("This is intended to relieve some of reflection's shortcomings by adding compiler checking against member info in reflective operations.")]
+[assembly: AssemblyDescription("This is intended to relieve some of reflection's shortcomings by adding some type safe access to MemberInfo and code generation.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Devin Martin")]
 [assembly: AssemblyProduct("StaticReflection")]
-[assembly: AssemblyCopyright("Copyright © Devin Martin 2013")]
+[assembly: AssemblyCopyright("Copyright © Devin Martin 2013-2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

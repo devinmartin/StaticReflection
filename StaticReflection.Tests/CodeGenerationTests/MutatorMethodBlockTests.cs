@@ -26,7 +26,7 @@ namespace StaticReflection.Tests.CodeGenerationTests
         public void Mutate_Instance()
         {
             var mutator = MutatorMethodBlock<InstanceType>.Create();
-            mutator.AddReAssignmentMethodCallForPropertyOrField(
+            mutator.AddReAssignmentMethodCallForMember(
                 LambdaMemberInfo.MemberInfoFromExpression<InstanceType, string>(t => t.NameProperty),
                 (MethodInfo)LambdaMemberInfo.MemberInfoFromExpression<MutatorMethodBlockTests, string>(t => t.MutateStringInstance(string.Empty)),
                 this
@@ -44,7 +44,7 @@ namespace StaticReflection.Tests.CodeGenerationTests
         public void Mutate_Static()
         {
             var mutator = MutatorMethodBlock<InstanceType>.Create();
-            mutator.AddReAssignmentMethodCallForPropertyOrField(
+            mutator.AddReAssignmentMethodCallForMember(
                 LambdaMemberInfo.MemberInfoFromExpression<InstanceType, string>(t => t.NameProperty),
                 (MethodInfo)LambdaMemberInfo.MemberInfoFromExpression<MutatorMethodBlockTests, string>(t => MutatorMethodBlockTests.MutateString(string.Empty))
             );
@@ -55,6 +55,50 @@ namespace StaticReflection.Tests.CodeGenerationTests
             mutateMethod(mutableObject);
 
             Assert.AreEqual("mutated name", mutableObject.NameProperty);
+        }
+
+        [TestMethod]
+        public void MutatePassesToComposedMutator()
+        {
+            var mutator = MutatorMethodBlock<InstanceType>.Create();
+            mutator.AddReAssignmentMethodCallForMember(
+                LambdaMemberInfo.MemberInfoFromExpression<InstanceType, string>(t => t.NameProperty),
+                (MethodInfo)LambdaMemberInfo.MemberInfoFromExpression<MutatorMethodBlockTests, string>(t => MutatorMethodBlockTests.MutateString(string.Empty))
+            );
+
+            var mutator2 = mutator.WithMutator();
+            var mutateMethod = mutator2.Compile();
+
+            var mutableObject = new InstanceType() { NameProperty = "name" };
+            mutateMethod(mutableObject);
+
+            Assert.AreEqual("mutated name", mutableObject.NameProperty);
+        }
+
+        [TestMethod]
+        public void Mutate_Composed()
+        {
+            var mutator = MutatorMethodBlock<InstanceType>.Create();
+            mutator.AddReAssignmentMethodCallForMember(
+                LambdaMemberInfo.MemberInfoFromExpression<InstanceType, string>(t => t.NameProperty),
+                (MethodInfo)LambdaMemberInfo.MemberInfoFromExpression<MutatorMethodBlockTests, string>(t => MutatorMethodBlockTests.MutateString(string.Empty))
+            );
+
+            var mutator2 = mutator.WithMutator();
+            mutator2.AddReAssignmentMethodCallForMember(
+                LambdaMemberInfo.MemberInfoFromExpression<InstanceType, string>(t => t.NameField),
+                (MethodInfo)LambdaMemberInfo.MemberInfoFromExpression<MutatorMethodBlockTests, string>(t => t.MutateStringInstance(string.Empty)),
+                this
+            );
+
+
+            var mutateMethod = mutator2.Compile();
+
+            var mutableObject = new InstanceType() { NameProperty = "name", NameField = "test" };
+            mutateMethod(mutableObject);
+
+            Assert.AreEqual("mutated name", mutableObject.NameProperty);
+            Assert.AreEqual("mutated test", mutableObject.NameField);
         }
     }
 }
