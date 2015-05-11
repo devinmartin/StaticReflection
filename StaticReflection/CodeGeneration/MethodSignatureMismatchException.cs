@@ -7,7 +7,7 @@ namespace StaticReflection.CodeGeneration
 {
     public class MethodSignatureMismatchException : Exception
     {
-        MethodSignatureMismatchException(string message)
+        public MethodSignatureMismatchException(string message)
             :base(message)
         { }
     }

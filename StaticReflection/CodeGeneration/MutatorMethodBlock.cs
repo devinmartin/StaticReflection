@@ -28,11 +28,11 @@ namespace StaticReflection.CodeGeneration
 
         internal MutatorMethodBlock()
         {
-            
+
         }
 
         internal MutatorMethodBlock(IList<Expression> list, ParameterExpression parameterExpression)
-            :base(list, parameterExpression)
+            : base(list, parameterExpression)
         {
         }
 
@@ -45,7 +45,7 @@ namespace StaticReflection.CodeGeneration
         /// <returns>A reference to this. Optionally used for fluent apis.</returns>
         IMutatorMethodBlock<T> IMutatorMethodBlock<T>.AddReAssignmentMethodCallForMember(MemberInfo memberInfo, MethodInfo methodInfo)
         {
-            this.Validate(memberInfo, methodInfo);
+            MutatorMethodBlock<T>.Validate(memberInfo, methodInfo);
 
             var memberExpression = Expression.PropertyOrField(_valueParameter, memberInfo.Name);
             var invokeExpression = Expression.Call(methodInfo, memberExpression);
@@ -65,7 +65,7 @@ namespace StaticReflection.CodeGeneration
         /// <returns>A reference to this. Optionally used for fluent apis.</returns>
         IMutatorMethodBlock<T> IMutatorMethodBlock<T>.AddReAssignmentMethodCallForMember(MemberInfo memberInfo, MethodInfo methodInfo, object methodInstance)
         {
-            this.Validate(memberInfo, methodInfo);
+            MutatorMethodBlock<T>.Validate(memberInfo, methodInfo);
             ConstantExpression methodInstanceExpression = Expression.Constant(methodInstance);
             var memberExpression = Expression.PropertyOrField(_valueParameter, memberInfo.Name);
             var invokeExpression = Expression.Call(methodInstanceExpression, methodInfo, memberExpression);
@@ -75,9 +75,32 @@ namespace StaticReflection.CodeGeneration
             return this;
         }
 
-        private void Validate(MemberInfo memberInfo, MethodInfo methodInfo)
+        private static void Validate(MemberInfo memberInfo, MethodInfo methodInfo)
         {
-            
+            switch (memberInfo.MemberType)
+            {
+                case MemberTypes.Field:
+                    MutatorMethodBlock<T>.Validate(((FieldInfo)memberInfo).FieldType, methodInfo);
+                    break;
+                case MemberTypes.Property:
+                    MutatorMethodBlock<T>.Validate(((PropertyInfo)memberInfo).PropertyType, methodInfo);
+                    break;
+                default:
+                    throw new MethodSignatureMismatchException(string.Format("Can't user a member of type {0}", memberInfo.MemberType));
+            }
+        }
+
+        private static void Validate(Type memberType, MethodInfo methodInfo)
+        {
+            if (memberType != methodInfo.ReturnType)
+                throw new MethodSignatureMismatchException("The return type and the member type don't match");
+
+            var parameters = methodInfo.GetParameters();
+            if (parameters.Length != 1)
+                throw new MethodSignatureMismatchException("Must have one parameter matching the member type");
+
+            if (parameters[0].ParameterType != memberType)
+                throw new MethodSignatureMismatchException("The parameter doesn't match the member type");
         }
     }
 }
