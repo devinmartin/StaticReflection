@@ -13,8 +13,7 @@ void Main()
 	
 	In this example a person object contains a sensetive field, the SSN. Suppose we are logging this object but
 	don't want to log the sensitive value. This example will use a redact attribute to generate a method that
-	will redact the person object with near static code performance. It will then compare the performance with
-	a standard method that performs the same operation.
+	will redact the person object with near static code performance.
 	*/
 
 
@@ -25,35 +24,25 @@ void Main()
 	// create the mutator methodblock
 	var methodBlock = MutatorMethodBlock<Person>.Create();
 	
-	// lets now find all members that have a redact attribute
+	// lets now find all members that have a redact attribute using reflection
+	// We will only do this once ever!
 	var personType = typeof(Person);
 	foreach (var memberInfo in personType.GetMembers())
 	{
 		if (memberInfo.GetCustomAttribute<RedactAttribute>() != null)
 		{
-			// we've found the attribute, dynamically run the field through the mutator. In a real situation parameter type and return type checking would be needed.
+			// we've found the attribute, lets run the field through the mutator. In a real situation parameter type and return type checking would be needed.
 			methodBlock.AddReAssignmentMethodCallForMember(memberInfo, redactMethodInfo, this); // this is the instance of the object for the .Redact method, in this case the current UserQuery
 		}
 	}
 	
-	// we've dynamically built our mutator method expression. Now lets get a delegate.
+	// we've dynamically built our mutator method expression. Now lets get a compiled delegate.
 	Action<Person> personRedactDelegate = methodBlock.Compile();
 	
-	// we now have a static method that does no reflection. It will peform as if you'd written the mutator code inline directly.
+	// we now have a static method that does no reflection. It will peform almost as if you'd written the mutator code inline directly.
 	var personTest = new Person() { Name = "test", Age = 30, SSN = "123-45-6789"};
-	Stopwatch watch = new Stopwatch();
-	watch.Start();
 	personRedactDelegate(personTest);
-	watch.Stop();
 	personTest.Dump("Redacted Person");
-	watch.Dump("Elapsed Time for Generated Code");
-	
-	// for comparison, we'll call a standard method that does the exact same operation
-	personTest = new Person() { Name = "test", Age = 30, SSN = "123-45-6789"};
-	watch.Start();
-	this.InlineRedactor(personTest);
-	watch.Stop();
-	watch.Dump("Elapsed Time for Static Code");
 }
 
 // static method that will perform out mutation, in this case redaction
@@ -74,9 +63,3 @@ class Person
 
 // define a simple attribute indicating that an item needs redaction
 class RedactAttribute : Attribute { }
-
-// this is equivalent to the code that we generate dynamically
-void InlineRedactor(Person value)
-{
-	value.SSN = this.Redact(value.SSN);
-}
