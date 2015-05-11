@@ -13,4 +13,7 @@
     <copyright>2013-2015 Devin Martin</copyright>
     <tags>lambda reflection member name code generation</tags>
   </metadata>
+  <files>
+    <file src="linqpad-samples\**" target="linqpad-samples" />
+  </files>
 </package>
