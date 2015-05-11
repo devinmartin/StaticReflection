@@ -45,6 +45,8 @@ namespace StaticReflection.CodeGeneration
         /// <returns>A reference to this. Optionally used for fluent apis.</returns>
         IMutatorMethodBlock<T> IMutatorMethodBlock<T>.AddReAssignmentMethodCallForMember(MemberInfo memberInfo, MethodInfo methodInfo)
         {
+            this.Validate(memberInfo, methodInfo);
+
             var memberExpression = Expression.PropertyOrField(_valueParameter, memberInfo.Name);
             var invokeExpression = Expression.Call(methodInfo, memberExpression);
 
@@ -63,6 +65,7 @@ namespace StaticReflection.CodeGeneration
         /// <returns>A reference to this. Optionally used for fluent apis.</returns>
         IMutatorMethodBlock<T> IMutatorMethodBlock<T>.AddReAssignmentMethodCallForMember(MemberInfo memberInfo, MethodInfo methodInfo, object methodInstance)
         {
+            this.Validate(memberInfo, methodInfo);
             ConstantExpression methodInstanceExpression = Expression.Constant(methodInstance);
             var memberExpression = Expression.PropertyOrField(_valueParameter, memberInfo.Name);
             var invokeExpression = Expression.Call(methodInstanceExpression, methodInfo, memberExpression);
@@ -70,6 +73,11 @@ namespace StaticReflection.CodeGeneration
             this._expressions.Add(Expression.Assign(memberExpression, invokeExpression));
 
             return this;
+        }
+
+        private void Validate(MemberInfo memberInfo, MethodInfo methodInfo)
+        {
+            
         }
     }
 }

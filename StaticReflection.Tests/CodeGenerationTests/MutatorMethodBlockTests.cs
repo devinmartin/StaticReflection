@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using FluentAssertions;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using StaticReflection.CodeGeneration;
 using System;
 using System.Collections.Generic;
@@ -12,6 +13,26 @@ namespace StaticReflection.Tests.CodeGenerationTests
     [TestClass]
     public class MutatorMethodBlockTests
     {
+        static int MutateReturnTypeMismatch(string input)
+        {
+            return 1;
+        }
+        static string MutateParameterTypeMismatch(int input)
+        {
+            return input.ToString();
+        }
+        static string MutateNoParameters()
+        {
+            return string.Empty;
+        }
+
+        static void MutateVoid(string input)
+        { }
+
+        static string MutateExtra(string in1, string in2)
+        {
+            return in1;
+        }
         static string MutateString(string input)
         {
             return "mutated " + input;
@@ -99,6 +120,75 @@ namespace StaticReflection.Tests.CodeGenerationTests
 
             Assert.AreEqual("mutated name", mutableObject.NameProperty);
             Assert.AreEqual("mutated test", mutableObject.NameField);
+        }
+
+        [TestMethod]
+        public void Mutate_NoParameters()
+        {
+            var mutator = MutatorMethodBlock<InstanceType>.Create();
+            Action act = () =>
+            {
+                mutator.AddReAssignmentMethodCallForMember(
+                    LambdaMemberInfo.MemberInfoFromExpression<InstanceType, string>(t => t.NameProperty),
+                    (MethodInfo)LambdaMemberInfo.MemberInfoFromExpression<MutatorMethodBlockTests>(t => MutatorMethodBlockTests.MutateNoParameters()));
+            };
+
+            act.ShouldThrow<MethodSignatureMismatchException>();
+        }
+
+        [TestMethod]
+        public void Mutate_Void()
+        {
+            var mutator = MutatorMethodBlock<InstanceType>.Create();
+            Action act = () =>
+            {
+                mutator.AddReAssignmentMethodCallForMember(
+                    LambdaMemberInfo.MemberInfoFromExpression<InstanceType, string>(t => t.NameProperty),
+                    (MethodInfo)LambdaMemberInfo.MemberInfoFromExpression<MutatorMethodBlockTests>(t => MutatorMethodBlockTests.MutateVoid("")));
+            };
+
+            act.ShouldThrow<MethodSignatureMismatchException>();
+        }
+        [TestMethod]
+        public void Mutate_ParameterCountWrong()
+        {
+            var mutator = MutatorMethodBlock<InstanceType>.Create();
+            Action act = () =>
+            {
+                mutator.AddReAssignmentMethodCallForMember(
+                    LambdaMemberInfo.MemberInfoFromExpression<InstanceType, string>(t => t.NameProperty),
+                    (MethodInfo)LambdaMemberInfo.MemberInfoFromExpression<MutatorMethodBlockTests>(t => MutatorMethodBlockTests.MutateExtra("", "")));
+            };
+
+            act.ShouldThrow<MethodSignatureMismatchException>();
+        }
+
+        [TestMethod]
+        public void Mutate_ParameterTypeMismatch()
+        {
+            var mutator = MutatorMethodBlock<InstanceType>.Create();
+            Action act = () =>
+            {
+                mutator.AddReAssignmentMethodCallForMember(
+                    LambdaMemberInfo.MemberInfoFromExpression<InstanceType, string>(t => t.NameProperty),
+                    (MethodInfo)LambdaMemberInfo.MemberInfoFromExpression<MutatorMethodBlockTests>(t => MutatorMethodBlockTests.MutateParameterTypeMismatch(1)));
+            };
+
+            act.ShouldThrow<MethodSignatureMismatchException>();
+        }
+
+        [TestMethod]
+        public void Mutate_ReturnTypeMismatch()
+        {
+            var mutator = MutatorMethodBlock<InstanceType>.Create();
+            Action act = () =>
+            {
+                mutator.AddReAssignmentMethodCallForMember(
+                    LambdaMemberInfo.MemberInfoFromExpression<InstanceType, string>(t => t.NameProperty),
+                    (MethodInfo)LambdaMemberInfo.MemberInfoFromExpression<MutatorMethodBlockTests>(t => MutatorMethodBlockTests.MutateReturnTypeMismatch("")));
+            };
+
+            act.ShouldThrow<MethodSignatureMismatchException>();
         }
     }
 }
