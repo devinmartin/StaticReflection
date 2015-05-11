@@ -43,7 +43,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="linqpad-samples\Redaction.linq" />
+    <None Include="linqpad-samples\1.1 - Redaction.linq" />
+    <None Include="linqpad-samples\1.2 - Redaction Performance.linq" />
     <None Include="StaticReflection.nuspec" />
   </ItemGroup>
   <ItemGroup />
