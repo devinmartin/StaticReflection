@@ -11,6 +11,9 @@
     <description>Relieves some of reflection's shortcomings by adding some type safe access to MemberInfo and code generation.</description>
 	  <summary>Combines the power of reflection with the performance and type safety of static code.</summary>
     <copyright>2013-2015 Devin Martin</copyright>
-    <tags>lambda reflection member name code generation</tags>
+    <tags>lambda reflection member name code generation linqpad-samples</tags>
   </metadata>
+  <files>
+    <file src="linqpad-samples\**" target="linqpad-samples" />
+  </files>
 </package>
