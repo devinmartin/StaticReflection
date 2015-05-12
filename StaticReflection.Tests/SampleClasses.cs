@@ -11,7 +11,7 @@ namespace StaticReflection.Tests
     {
         public string NameProperty { get; set; }
         public string NameField;
-        internal int InternalField;
+        internal int InternalField = 0;
 
         public int MethodInt()
         {

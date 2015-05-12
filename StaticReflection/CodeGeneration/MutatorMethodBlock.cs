@@ -14,9 +14,6 @@ namespace StaticReflection.CodeGeneration
     /// <typeparam name="T">Type to build a mutator for</typeparam>
     public class MutatorMethodBlock<T> : MethodBuilder<T>, IMutatorMethodBlock<T>
     {
-        private IList<Expression> list;
-        private ParameterExpression parameterExpression;
-
         /// <summary>
         /// Creates this instance.
         /// </summary>
